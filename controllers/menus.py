@@ -1,5 +1,7 @@
 from abc import ABC
 from views.menu_views import MainMenuView
+from views.menu_views import PlayerMenuView
+from controllers.managers import PlayerManager
 
 class Menu(ABC):
     def __init__ (self, title):
@@ -15,41 +17,18 @@ class Menu(ABC):
         - function : fonction associée à l'option.
         """
         self.options[number] = (description, function)
-
-
-class PlayerMenu(Menu):
-    def run(self):
-        while True:
-            print("\n=== Menu Joueurs ===")
-            print("1. Ajouter un joueur")
-            print("2. Liste des joueurs")
-            print("r. Retour au menu principal")
-
-            choix = input("Entrez votre choix : ")
-
-            if choix == "1":
-                 """Ajouter l'option du choix""" # A modifier
-             
-            elif choix == "2":
-                """Ajouter l'option du choix""" # A modifier
-            
-            elif choix == "r":
-                print("Retour au menu principal.")
-                break  # Retourne au menu principal
-            else:
-                print("Choix invalide, veuillez réessayer.")
-
+      
 class MainMenu(Menu):
     def __init__(self, title):
         super().__init__(title)
         self.add_option("1", "Paramètre joueur", self.launch_player_menu)
-        self.add_option("2", "Commencer un tournoi", self.option_2)
+        self.add_option("2", "Commencer un tournoi", self.start_tournament)
         self.add_option("3", "Option 3", self.option_3)
         self.add_option("q", "Quitter", self.quit)
         
-        self.player_menu = PlayerMenu("Player Menu")
+        self.player_menu = PlayerMenu("Player Menu", self)
 
-    def execute(self):
+    def run(self):
         """Boucle principale du menu."""
         while True:
             MainMenuView.display_options("Main Menu", self.options)
@@ -62,7 +41,7 @@ class MainMenu(Menu):
             else:
                 print("Choix invalide, veuillez réessayer.\n")
     
-    def option_2(self):
+    def start_tournament(self):
         print("Action pour l'option 2.")
     
     def option_3(self):
@@ -74,3 +53,58 @@ class MainMenu(Menu):
     def quit(self):
         print("A bientôt !")
         exit()
+
+
+class PlayerMenu(Menu):
+    
+    #Les attributs 
+    def __init__(self,title, main_menu): 
+        super().__init__(title)   
+        self.add_option("1", "Ajouter un joueur",self.add_player) # rename l'option
+        self.add_option("2", "Liste des joueurs", self.player_list) # rename l'option
+        self.add_option("3", "Supprimer un joueur", self.delete_player) # rename l'option
+        self.add_option("r","Retour au menu principal",self.launch_main_menu) # rename l'option
+        self.main_menu = main_menu
+        self.player_manager = PlayerManager()
+
+    def run(self):
+        """Boucle MenuPlayer."""
+        while True:
+            PlayerMenuView.display_options("Player Menu", self.options)
+            choice = input("Entrez votre choix : ")
+
+            if choice in self.options:
+                description, function = self.options[choice]
+                print(f"\nVous avez choisi : {description}\n")
+                function()  # Exécute la fonction associée
+            else:
+                print("Choix invalide, veuillez réessayer.\n")
+    
+    #Les méthodes
+    def add_player(self):
+        
+        data_player = PlayerMenuView.display_add_players()
+             
+        # Vérifier que le nombre de points est un entier
+        try:
+            data_player['point'] = int(data_player['point'])
+        except ValueError:
+            print("Erreur : Le nombre de points doit être un entier.")
+            return  # Retour  au Playermenu
+        
+        # Ajouter le joueur
+        self.player_manager.add_player(
+            data_player['name'], 
+            data_player['nickname'], 
+            data_player['date_of_birth'], 
+            data_player['point']
+        )
+    
+    def player_list(self):
+        pass
+    
+    def delete_player(self):
+        pass
+    
+    def launch_main_menu(self):
+        self.main_menu.run()
