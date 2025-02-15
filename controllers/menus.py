@@ -31,7 +31,8 @@ class MainMenu(Menu):
 
     def run(self):
         """Boucle principale du menu."""
-        while True:
+        choice = None
+        while choice != "q":
             MainMenuView.display_options("Main Menu", self.options)
             choice = input("Entrez votre choix : ")
 
@@ -53,7 +54,6 @@ class MainMenu(Menu):
 
     def quit(self):
         print("A bientôt !")
-        exit()
 
 
 class PlayerMenu(Menu):
@@ -68,7 +68,8 @@ class PlayerMenu(Menu):
 
     def run(self):
         """Boucle du menu joueur."""
-        while True:
+        choice = None
+        while choice != "r":
             PlayerMenuView.display_options("Player Menu", self.options)
             choice = input("Entrez votre choix : ")
 
@@ -95,11 +96,10 @@ class PlayerMenu(Menu):
         )
 
     def player_list(self):
-        player_menu_view = PlayerMenuView()
-        player_menu_view.display_players_list()
+        PlayerMenuView.display_players_list(self.player_manager.get_players())
 
     def delete_player(self):
         pass
 
     def launch_main_menu(self):
-        self.main_menu.run()
+        PlayerMenuView.display_return_message()

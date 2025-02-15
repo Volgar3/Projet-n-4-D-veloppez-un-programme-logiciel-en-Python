@@ -17,7 +17,6 @@ class MainMenuView(MenuView):
 
 
 class PlayerMenuView(MenuView):
-
     @staticmethod
     def display_add_players():
         """Demande les informations du joueur et les retourne sous forme de dictionnaire."""
@@ -36,15 +35,17 @@ class PlayerMenuView(MenuView):
 
         return data_player
 
-    def display_players_list(self):
+    @staticmethod
+    def display_players_list(players):
         """Affichage de la liste des joueurs."""
         print("\n=== Liste des joueurs ===")
-        
-        player_manager = PlayerManager()  # Instance de PlayerManager
-        players = player_manager.players_list()  # Récupération de la liste des joueurs
         
         for player in players:
             print(
                 f"Nom: {player['name']}, Surnom: {player['nickname']}, "
                 f"Date de naissance: {player['date_of_birth']}, Points: {player['point']}"
             )
+
+    @staticmethod
+    def display_return_message():
+        print("-> Retour au menu principal")

@@ -1,0 +1,10 @@
+{
+    "joueurs": [
+        {
+            "name": "Lebray",
+            "nickname": "Le petit",
+            "date_of_birth": "30-06-1996",
+            "point": 0
+        }
+    ]
+}

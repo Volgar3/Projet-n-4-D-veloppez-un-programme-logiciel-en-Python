@@ -55,7 +55,7 @@ class PlayerManager(Manager):
 
         print(f"Joueur {player.nickname} a été ajouté à la liste des participants.")
 
-    def players_list(self):
+    def get_players(self):
         """Lit le fichier JSON et retourne la liste des joueurs."""
         try:
             with open(self.filename, "r", encoding="utf-8") as file:
