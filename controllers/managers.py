@@ -1,7 +1,7 @@
 from abc import ABC
 import json
 import os
-from models.models import Player
+from models.models import Player, Tournement
 
 
 class Manager(ABC):
@@ -79,4 +79,13 @@ class PlayerManager(Manager):
 
 class TournamentManager(Manager):
     """Gestionnaire des tournois (à implémenter)."""
-    pass
+    
+    def __init__(self):
+        self.tournaments = []
+    
+    def create_tournament(self, name, location, start_date, end_date, number_of_rounds, current_round, description):
+        """Ajout d'un tournoi."""
+        tournament = Tournement(name, location, start_date, end_date, number_of_rounds, current_round, description)
+        self.tournaments.append(tournament)
+        
+        return tournament

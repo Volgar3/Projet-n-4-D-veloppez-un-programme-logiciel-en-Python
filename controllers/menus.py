@@ -1,6 +1,6 @@
 from abc import ABC
-from views.menu_views import MainMenuView, PlayerMenuView
-from controllers.managers import PlayerManager
+from views.menu_views import MainMenuView, PlayerMenuView, TournamentMenuView
+from controllers.managers import PlayerManager, TournamentManager
 
 
 class Menu(ABC):
@@ -103,3 +103,53 @@ class PlayerMenu(Menu):
 
     def launch_main_menu(self):
         PlayerMenuView.display_return_message()
+        
+        
+class TournamentMenu(Menu): 
+    
+    def __init__(self, title):
+        super().__init__(title)
+        self.add_option("1", "Créer un tournoi", self.create_tournament)
+        self.add_option("2", "Liste des tournois", self.tournament_list)
+        self.add_option("r", "Retour au menu principal", self.launch_main_menu)
+        self.tournament_manager = TournamentManager()
+        
+    def run(self):
+        """Boucle du menu tournoi."""
+        choice = None
+        while choice != "r":
+            TournamentMenuView.display_options("Tournament Menu", self.options)
+            choice = input("Entrez votre choix : ")
+
+            if choice in self.options:
+                description, function = self.options[choice]
+                print(f"\nVous avez choisi : {description}\n")
+                function()
+            else:
+                print("Choix invalide, veuillez réessayer.\n")
+                
+    def create_tournament(self):
+        data_tournament = TournamentMenuView.display_create_tournament()
+        try:
+            data_tournament['number_of_rounds'] = int(data_tournament['number_of_rounds'])
+        except ValueError:
+            print("Erreur : Le nombre de rounds doit être un entier.")
+            return
+        
+        self.tournament_manager.create_tournament(
+            data_tournament['name'],
+            data_tournament['location'],
+            data_tournament['start_date'],
+            data_tournament['end_date'],
+            data_tournament['number_of_rounds'],
+            data_tournament['current_round'],
+            data_tournament['description']
+        )
+        
+    def tournament_list(self):
+        TournamentMenuView.display_tournaments_list(self.tournament_manager.get_tournaments())
+        
+
+    
+    def launch_main_menu(self):
+        TournamentMenuView.display_return_message()

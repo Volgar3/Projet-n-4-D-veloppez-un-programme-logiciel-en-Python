@@ -49,3 +49,32 @@ class PlayerMenuView(MenuView):
     @staticmethod
     def display_return_message():
         print("-> Retour au menu principal")
+        
+class TournamentMenuView(MenuView):
+    @staticmethod
+    def display_create_tournament():
+        """Affichage des informations du tournoi à rentrer."""
+        print("\n=== Information du tournoi à rentrer ===")
+        name = input("Nom du tournoi : ")
+        location = input("Lieu du tournoi : ")
+        start_date = input("Date de début (DD-MM-YYYY) : ")
+        end_date = input("Date de fin (DD-MM-YYYY) : ")
+        number_of_rounds = input("Nombre de rounds : ")
+        current_round = input("Round actuel : ")
+        description = input("Description : ")
+        
+        data_tournament = {
+            "name": name,
+            "location": location,
+            "start_date": start_date,
+            "end_date": end_date,
+            "number_of_rounds": number_of_rounds,
+            "current_round": current_round,
+            "description": description,
+        }
+        return data_tournament
+    
+    def display_tournaments_list():
+        """Affichage de la liste des tournois."""
+        #Affichage de la liste des tournois en checkant le fichier json
+        pass
