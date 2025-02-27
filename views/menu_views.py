@@ -52,7 +52,7 @@ class PlayerMenuView(MenuView):
         
 class TournamentMenuView(MenuView):
     @staticmethod
-    def display_create_tournament():
+    def display_add_tournament():
         """Affichage des informations du tournoi à rentrer."""
         print("\n=== Information du tournoi à rentrer ===")
         name = input("Nom du tournoi : ")
