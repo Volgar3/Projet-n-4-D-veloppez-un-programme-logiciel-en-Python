@@ -12,16 +12,19 @@ class Player:
 
 class Tournement:
     
-    def __init__(self, name, location, start_date, end_date, number_of_rounds, current_round, description):
-        self.name = name
-        self.location = location
-        self.start_date = start_date
-        self.end_date = end_date
-        self.number_of_rounds = number_of_rounds # Valeur par défaut : 4 / a faire
-        self.current_round = current_round
-        self.rounds = []
-        self.players = []
-        self.description = description
+    def __init__(self, **kwargs):
+        self.name = kwargs.get('name')
+        self.location = kwargs.get('location')
+        self.start_date = kwargs.get('start_date')
+        self.end_date = kwargs.get('end_date')
+        self.number_of_rounds = kwargs.get('number_of_rounds', 4)
+        self.current_round = kwargs.get('current_round', 1)
+        self.description = kwargs.get('description')
+        self.rounds = [] # Objets Round
+        self.players = [] # Objets Round
+    
+    def next_round(self):
+        pass
 
 class Round:
     pass
