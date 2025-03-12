@@ -1,6 +1,7 @@
 from abc import ABC
 import json
 import os
+import random
 from models.models import Player, Tournement
 
 
@@ -21,7 +22,7 @@ class PlayerManager(Manager):
         # Vérifier si le dossier existe, sinon le créer
         os.makedirs(self.directory_players, exist_ok=True)
 
-    def add_player(self, name, nickname, date_of_birth, point):
+    def add_player(self, name, nickname, date_of_birth, point, matricules):
         """Ajoute un joueur au fichier players_list.json."""
         os.makedirs(self.directory_players, exist_ok=True)
 
@@ -36,7 +37,7 @@ class PlayerManager(Manager):
             data = {"joueurs": []}  # Création d'une structure vide si le fichier n'existe pas
 
         # Création d'une instance de Player (objet)
-        player = Player(name, nickname, date_of_birth, point)
+        player = Player(name, nickname, date_of_birth, point, matricules)
 
         # Transformation de l'objet en dictionnaire
         player_dict = {
@@ -44,6 +45,7 @@ class PlayerManager(Manager):
             "nickname": player.nickname,
             "date_of_birth": player.date_of_birth,
             "point": player.point,
+            "matricules ID": player.matricules
         }
 
         # Ajout du joueur dans la liste JSON
@@ -86,7 +88,7 @@ class TournamentManager(Manager):
         self.filename_tournament = filename_tournament
         filename_tournament = os.path.join(directory_tournaments, filename_tournament)
         self.tournaments = []
-        
+        self.players_atributes = []
         #Vérifier si le dossier existe, sinon le créer
         os.makedirs(directory_tournaments, exist_ok=True)
         
@@ -106,7 +108,15 @@ class TournamentManager(Manager):
             data = {"tournaments": []}
             
         #Création d'une instance de Tournament
-        tournament = Tournement(name, location, start_date, end_date, number_of_rounds, current_round, description)
+        tournament = Tournement(
+            name=name,
+            location=location,
+            start_date=start_date,
+            end_date=end_date,
+            number_of_rounds=number_of_rounds,
+            current_round=current_round,
+            description=description
+        )
         
         tournament_dict = {
             "name": tournament.name,
@@ -146,3 +156,26 @@ class TournamentManager(Manager):
     def get_player_from_list(self): # A utiliser dans create_tournament
         """Sélectionne les joueurs de la liste."""
         pass
+    
+    def load_players(self):
+        """Charge les joueurs depuis le fichier JSON."""
+        with open("data/tournaments/players_list.json", "r", encoding="utf-8") as file:
+            data = json.load(file)
+            self.players_attributes = [(player["name"], player["point"]) for player in data["joueurs"]]
+            
+        return self.players_attributes
+    
+    def create_matches(self):
+        """Création des matchs."""
+        #chargement des jou
+        players = self.load_players()
+        
+        players.sort(key=lambda x: x[1], reverse=True) # 1 Represente les points du joueur car c'est une liste de tuple 
+
+        matches = []
+        while len(players) >= 2:
+            P1, P2 = random.sample(players, 2)
+            P1 = players.pop(0)
+            P2 = players.pop(0)
+            matches.append((P1, P2))
+        return matches

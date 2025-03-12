@@ -1,5 +1,5 @@
 from abc import ABC
-from controllers.managers import PlayerManager
+from controllers.managers import PlayerManager, TournamentManager
 
 
 class MenuView(ABC):
@@ -25,12 +25,14 @@ class PlayerMenuView(MenuView):
         nickname = input("Surnom du joueur : ")
         date_of_birth = input("Date de naissance (DD-MM-YYYY) : ")
         point = input("Nombre de points : ")
+        matricules = input("Matricules ID : ")
 
         data_player = {
             "name": name,
             "nickname": nickname,
             "date_of_birth": date_of_birth,
             "point": point,
+            "Matricules ID": matricules,
         }
 
         return data_player
@@ -42,8 +44,8 @@ class PlayerMenuView(MenuView):
         
         for player in players:
             print(
-                f"Nom: {player['name']}, Surnom: {player['nickname']}, "
-                f"Date de naissance: {player['date_of_birth']}, Points: {player['point']}"
+                f"Nom: {player['name']}, Surnom: {player['nickname']}, Date de naissance: {player['date_of_birth']} "
+                f"Points: {player['point']}, Matricules ID: {player['matricules']}"
             )
 
     @staticmethod
@@ -62,7 +64,7 @@ class TournamentMenuView(MenuView):
         number_of_rounds = input("Nombre de rounds : ")
         current_round = input("Round actuel : ")
         description = input("Description : ")
-        
+
         data_tournament = {
             "name": name,
             "location": location,
@@ -73,8 +75,22 @@ class TournamentMenuView(MenuView):
             "description": description,
         }
         return data_tournament
-    
-    def display_tournaments_list():
+
+    @staticmethod
+    def display_tournaments_list(tournaments):
         """Affichage de la liste des tournois."""
-        #Affichage de la liste des tournois en checkant le fichier json
-        pass
+        print("\n=== Liste des tournois ===")
+        for tournament in tournaments:
+            print(
+                f"Nom: {tournament['name']}, Lieu: {tournament['location']}, "
+                f"Date de début: {tournament['start_date']}, Date de fin: {tournament['end_date']}, "
+                f"Nombre de rounds: {tournament['number_of_rounds']}, Round actuel: {tournament['current_round']}, "
+                f"Description: {tournament['description']}"
+            )
+            
+    @staticmethod
+    def display_matches(matches): # A FAIRE OMG J'AI TOUT COMPRIS
+        """Affichage des matchs."""
+        print("\n=== Liste des matchs ===")
+        for match in matches:
+            print(f"Match : {match[0]} contre {match[1]}")

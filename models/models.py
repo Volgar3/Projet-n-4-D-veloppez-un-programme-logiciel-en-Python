@@ -1,11 +1,12 @@
 class Player:
     
     #Les attributs
-    def __init__(self, name, nickname, date_of_birth, point):
+    def __init__(self, name, nickname, date_of_birth, point, matricules):
         self.name = name
         self.nickname = nickname
         self.date_of_birth = date_of_birth
         self.point = point
+        self.matricules = matricules
         
     #Les méthodes 
     
@@ -22,6 +23,9 @@ class Tournement:
         self.description = kwargs.get('description')
         self.rounds = [] # Objets Round
         self.players = [] # Objets Round
+        self.matches = [] # Objets Match
+
+        
     
     def next_round(self):
         pass

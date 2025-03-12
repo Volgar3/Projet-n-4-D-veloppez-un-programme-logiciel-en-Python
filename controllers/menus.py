@@ -62,7 +62,6 @@ class PlayerMenu(Menu):
         super().__init__(title)
         self.add_option("1", "Ajouter un joueur", self.add_player)
         self.add_option("2", "Liste des joueurs", self.player_list)
-        self.add_option("3", "Supprimer un joueur", self.delete_player)
         self.add_option("r", "Retour au menu principal", self.launch_main_menu)
         self.main_menu = main_menu
         self.player_manager = PlayerManager()
@@ -93,14 +92,12 @@ class PlayerMenu(Menu):
             data_player['name'],
             data_player['nickname'],
             data_player['date_of_birth'],
-            data_player['point']
+            data_player['point'],
+            data_player['matricules ID']
         )
 
     def player_list(self):
         PlayerMenuView.display_players_list(self.player_manager.get_players())
-
-    def delete_player(self):
-        pass
 
     def launch_main_menu(self):
         PlayerMenuView.display_return_message()
@@ -148,9 +145,10 @@ class TournamentMenu(Menu):
             data_tournament['current_round'],
             data_tournament['description']
         )
-        
+    
     def tournament_list(self):
-        TournamentMenuView.display_tournaments_list(self.tournament_manager.get_tournaments())
+        tournaments = self.tournament_manager.get_tournaments()
+        TournamentMenuView.display_tournaments_list(tournaments)
         
     def start_tournament(self):
         """Lancement d'un tournoi."""  # Permet de choisir un tournoie déjà créé ou de le créer
@@ -158,3 +156,4 @@ class TournamentMenu(Menu):
     
     def launch_main_menu(self):
         TournamentMenuView.display_return_message()
+        self.main_menu.run()
