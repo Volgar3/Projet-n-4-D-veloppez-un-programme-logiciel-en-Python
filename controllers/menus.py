@@ -1,6 +1,7 @@
 from abc import ABC
 from views.menu_views import MainMenuView, PlayerMenuView, TournamentMenuView
 from controllers.managers import PlayerManager, TournamentManager
+from models.models import Round
 
 
 class Menu(ABC):
@@ -27,8 +28,10 @@ class MainMenu(Menu):
         self.add_option("3", "Option 3", self.option_3)
         self.add_option("q", "Quitter", self.quit)
 
-        self.player_menu = PlayerMenu("Player Menu", self)
-        self.tournament_menu = TournamentMenu("Tournament Menu", self)
+        self.player_manager = PlayerManager()
+        self.tournament_manager = TournamentManager()
+        self.player_menu = PlayerMenu("Player Menu", self.player_manager)
+        self.tournament_menu = TournamentMenu("Tournament Menu", self.tournament_manager, self.player_manager)
         
     def run(self):
         """Boucle principale du menu."""
@@ -58,13 +61,12 @@ class MainMenu(Menu):
 
 
 class PlayerMenu(Menu):
-    def __init__(self, title, main_menu):
+    def __init__(self, title, player_manager):
         super().__init__(title)
         self.add_option("1", "Ajouter un joueur", self.add_player)
         self.add_option("2", "Liste des joueurs", self.player_list)
         self.add_option("r", "Retour au menu principal", self.launch_main_menu)
-        self.main_menu = main_menu
-        self.player_manager = PlayerManager()
+        self.player_manager = player_manager
 
     def run(self):
         """Boucle du menu joueur."""
@@ -83,17 +85,17 @@ class PlayerMenu(Menu):
     def add_player(self):
         data_player = PlayerMenuView.display_add_players()
         try:
-            data_player['point'] = int(data_player['point'])
+            data_player['points'] = int(data_player['points'])
         except ValueError:
             print("Erreur : Le nombre de points doit être un entier.")
             return
 
         self.player_manager.add_player(
-            data_player['name'],
-            data_player['nickname'],
+            data_player['first_name'],
+            data_player['last_name'],
             data_player['date_of_birth'],
-            data_player['point'],
-            data_player['matricules ID']
+            data_player['points'],
+            data_player['ID']
         )
 
     def player_list(self):
@@ -105,14 +107,14 @@ class PlayerMenu(Menu):
         
 class TournamentMenu(Menu): 
     
-    def __init__(self, title, main_menu):
+    def __init__(self, title, tournament_manager, player_manager):
         super().__init__(title)
         self.add_option("1", "Créer un tournoi", self.add_tournament)
         self.add_option("2", "Liste des tournois", self.tournament_list)
-        self.add_option("3", "Option 3", self.start_tournament)
+        self.add_option("3", "Lancement du tournoi", self.start_tournament)
         self.add_option("r", "Retour au menu principal", self.launch_main_menu)
-        self.main_menu = main_menu
-        self.tournament_manager = TournamentManager()
+        self.tournament_manager = tournament_manager
+        self.player_manager = player_manager
         
     def run(self):
         """Boucle du menu tournoi."""
@@ -151,9 +153,18 @@ class TournamentMenu(Menu):
         TournamentMenuView.display_tournaments_list(tournaments)
         
     def start_tournament(self):
-        """Lancement d'un tournoi."""  # Permet de choisir un tournoie déjà créé ou de le créer
-        pass
-    
+        """Lancement d'un tournoi."""
+        
+        # Il faut savoir quel tournament on a lancé
+        # tournament = TournamentMenu.get_tournament()
+        # round = Round(len(tournament.rounds))
+        # round.create_matches(self.player_manager)
+        # tournament.rounds.append(round)
+        # TODO: Sauvegarder les rounds dans le JSON
+        # Ligne d'en dessous à supprimer
+        self.matchs = self.launch_match.create_matches(self.player_manager)
+        
     def launch_main_menu(self):
         TournamentMenuView.display_return_message()
-        self.main_menu.run()
+        
+    

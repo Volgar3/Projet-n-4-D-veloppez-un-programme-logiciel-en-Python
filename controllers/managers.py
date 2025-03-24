@@ -13,7 +13,7 @@ class Manager(ABC):
 class PlayerManager(Manager):
     """Gestionnaire des joueurs."""
 
-    def __init__(self, filename_players="players_list.json", directory_players="data/tournaments"):
+    def __init__(self, filename_players="players_list.json", directory_players="data/players"):
         """Création du fichier JSON pour stocker les joueurs."""
         self.directory_players = directory_players
         self.filename_players = os.path.join(self.directory_players, filename_players)
@@ -22,7 +22,7 @@ class PlayerManager(Manager):
         # Vérifier si le dossier existe, sinon le créer
         os.makedirs(self.directory_players, exist_ok=True)
 
-    def add_player(self, name, nickname, date_of_birth, point, matricules):
+    def add_player(self, first_name, last_name, date_of_birth, points, matricule ):
         """Ajoute un joueur au fichier players_list.json."""
         os.makedirs(self.directory_players, exist_ok=True)
 
@@ -37,15 +37,15 @@ class PlayerManager(Manager):
             data = {"joueurs": []}  # Création d'une structure vide si le fichier n'existe pas
 
         # Création d'une instance de Player (objet)
-        player = Player(name, nickname, date_of_birth, point, matricules)
+        player = Player(first_name, last_name, date_of_birth, points, matricule)
 
         # Transformation de l'objet en dictionnaire
         player_dict = {
-            "name": player.name,
-            "nickname": player.nickname,
+            "first_name": player.first_name,
+            "last_name": player.last_name,
             "date_of_birth": player.date_of_birth,
-            "point": player.point,
-            "matricules ID": player.matricules
+            "points": player.points,
+            "ID": player.matricule
         }
 
         # Ajout du joueur dans la liste JSON
@@ -55,7 +55,7 @@ class PlayerManager(Manager):
         with open(self.filename_players, "w", encoding="utf-8") as file:
             json.dump(data, file, indent=4, ensure_ascii=False)
 
-        print(f"Joueur {player.nickname} a été ajouté à la liste des participants.")
+        print(f"Joueur {player.last_name} a été ajouté à la liste des participants.")
 
     def get_players(self):
         """Lit le fichier JSON et retourne la liste des joueurs."""
@@ -77,8 +77,7 @@ class PlayerManager(Manager):
             self.players = []  # On évite que le programme plante en cas de problème
 
         return self.players  # Retourne la liste des joueurs
-
-
+        
 class TournamentManager(Manager):
     """Gestionnaire des tournois."""
     
@@ -91,8 +90,7 @@ class TournamentManager(Manager):
         self.players_atributes = []
         #Vérifier si le dossier existe, sinon le créer
         os.makedirs(directory_tournaments, exist_ok=True)
-        
-        
+           
     def add_tournament(self, name, location, start_date, end_date, number_of_rounds, current_round, description):
         """Création d'un tournoi."""
         os.makedirs(self.directory_tournaments, exist_ok=True)
@@ -152,30 +150,5 @@ class TournamentManager(Manager):
             self.tournaments = []
 
         return self.tournaments # Retourne la liste des tournois
-    
-    def get_player_from_list(self): # A utiliser dans create_tournament
-        """Sélectionne les joueurs de la liste."""
-        pass
-    
-    def load_players(self):
-        """Charge les joueurs depuis le fichier JSON."""
-        with open("data/tournaments/players_list.json", "r", encoding="utf-8") as file:
-            data = json.load(file)
-            self.players_attributes = [(player["name"], player["point"]) for player in data["joueurs"]]
-            
-        return self.players_attributes
-    
-    def create_matches(self):
-        """Création des matchs."""
-        #chargement des jou
-        players = self.load_players()
-        
-        players.sort(key=lambda x: x[1], reverse=True) # 1 Represente les points du joueur car c'est une liste de tuple 
 
-        matches = []
-        while len(players) >= 2:
-            P1, P2 = random.sample(players, 2)
-            P1 = players.pop(0)
-            P2 = players.pop(0)
-            matches.append((P1, P2))
-        return matches
+    
