@@ -25,7 +25,6 @@ class MainMenu(Menu):
         super().__init__(title)
         self.add_option("1", "Paramètre joueur", self.launch_player_menu)
         self.add_option("2", "Paramétrer un tournoi", self.launch_tournament_menu)
-        self.add_option("3", "Option 3", self.option_3)
         self.add_option("q", "Quitter", self.quit)
 
         self.player_manager = PlayerManager()
@@ -49,16 +48,12 @@ class MainMenu(Menu):
 
     def launch_tournament_menu(self):
         self.tournament_menu.run()
-
-    def option_3(self):
-        print("Action pour l'option 3.")
-
+        
     def launch_player_menu(self):
         self.player_menu.run()
 
     def quit(self):
         print("A bientôt !")
-
 
 class PlayerMenu(Menu):
     def __init__(self, title, player_manager):
@@ -111,7 +106,7 @@ class TournamentMenu(Menu):
         super().__init__(title)
         self.add_option("1", "Créer un tournoi", self.add_tournament)
         self.add_option("2", "Liste des tournois", self.tournament_list)
-        self.add_option("3", "Lancement du tournoi", self.start_tournament)
+        self.add_option("3", "Commencer un tournoi", self.start_tournament)
         self.add_option("r", "Retour au menu principal", self.launch_main_menu)
         self.tournament_manager = tournament_manager
         self.player_manager = player_manager
@@ -145,18 +140,56 @@ class TournamentMenu(Menu):
             data_tournament['end_date'],
             data_tournament['number_of_rounds'],
             data_tournament['current_round'],
-            data_tournament['description']
+            data_tournament['description'],
+            data_tournament['players']
         )
     
     def tournament_list(self):
         tournaments = self.tournament_manager.get_tournaments()
         TournamentMenuView.display_tournaments_list(tournaments)
-        
+
     def start_tournament(self):
-        """Lancement d'un tournoi."""
+        """Permet de choisir un tournoi."""
+        # On vérifie si un tournoi est disponible
+        tournaments = self.tournament_manager.get_tournaments()
+        if not tournaments:
+            print("Aucun tournoi disponible.")
+            return None
         
-        # Il faut savoir quel tournament on a lancé
-        # tournament = TournamentMenu.get_tournament()
+        TournamentMenuView.display_tournaments_list(tournaments)
+        choice_name = input("Entrez le nom du tournoi que vous souhaitez sélectionner : ").strip()
+        
+        # Vérification du nom du tournoi sélectionné
+        for tournament in tournaments:
+            if tournament["name"].lower() == choice_name.lower():  
+                print(f"Le tournoi {tournament['name']} commence !")
+                
+                # Initialiser la liste des rounds si elle n'existe pas
+                if "rounds" not in tournament:
+                    tournament["rounds"] = []
+
+                # Création d'un nouveau round
+                round_number = len(tournament["rounds"]) + 1
+                round = Round(round_number)
+
+                # Générer les matchs pour ce round
+                round.create_matches(self.player_manager)
+
+                # Ajouter le round au tournoi
+                tournament["rounds"].append(round)
+
+                # Sauvegarder le tournoi
+                self.tournament_manager.save_tournament(tournament)
+
+                print(f"Le round {round_number} a été créé avec succès.")
+                return tournament
+            else : 
+                print("Tournoi non trouvé.")
+                return None
+        
+        
+        # TODO : Il faut savoir quel tournament on a lancé = FAIT
+        # tournament = TournamentMenu.get_tournament() = FAIT
         # round = Round(len(tournament.rounds))
         # round.create_matches(self.player_manager)
         # tournament.rounds.append(round)

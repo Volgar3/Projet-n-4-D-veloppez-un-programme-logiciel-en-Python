@@ -78,20 +78,49 @@ class PlayerManager(Manager):
 
         return self.players  # Retourne la liste des joueurs
         
+    def selected_players(self):
+        """Permet de sélectionner les joueurs pour un tournoi."""
+        print("\n=== Liste des joueurs disponibles ===")
+        self.get_players()
+        for index, player in enumerate(self.players):
+            print(f"{index + 1}. {player['first_name']} {player['last_name']} (ID: {player['ID']}, Points: {player['points']})")
+
+        selected_players = []
+        print("\nEntrez les ID des joueurs que vous souhaitez sélectionner (séparés par des virgules) :")
+        choices = input("ID des joueurs : ").split(",")
+
+        for choice in choices:
+            choice = choice.strip()  # Supprime les espaces autour de l'entrée
+            player_found = False
+            for player in self.players:
+                if player["ID"] == choice:  # Compare l'ID entré avec l'ID des joueurs
+                    selected_players.append(player)
+                    player_found = True
+                    break
+            if not player_found:
+                print(f"ID {choice} invalide ou introuvable.")
+
+        print("\n=== Joueurs sélectionnés ===")
+        for player in selected_players:
+            print(f"{player['first_name']} {player['last_name']} (ID: {player['ID']})")
+
+        return selected_players
+    
 class TournamentManager(Manager):
     """Gestionnaire des tournois."""
     
-    def __init__(self,filename_tournament= "tournament_list.json", directory_tournaments="data/tournaments" ):
+    def __init__(self,filename_tournament= "tournament_list.json", directory_tournaments="Projet_n°4/data/tournaments"):
         """Création du fichier JSON pour stocker les tournois."""
         self.directory_tournaments = directory_tournaments
         self.filename_tournament = filename_tournament
         filename_tournament = os.path.join(directory_tournaments, filename_tournament)
         self.tournaments = []
-        self.players_atributes = []
+        self.selected_players_list = []
         #Vérifier si le dossier existe, sinon le créer
-        os.makedirs(directory_tournaments, exist_ok=True)
+        os.makedirs(directory_tournaments, exist_ok=True)   
+        print(f"Répertoire des tournois : {self.directory_tournaments}")      
            
-    def add_tournament(self, name, location, start_date, end_date, number_of_rounds, current_round, description):
+    def add_tournament(self, name, location, start_date, end_date, number_of_rounds, current_round, description,players):
         """Création d'un tournoi."""
         os.makedirs(self.directory_tournaments, exist_ok=True)
         
@@ -105,15 +134,19 @@ class TournamentManager(Manager):
         else:
             data = {"tournaments": []}
             
+        # Sélection des joueurs
+        selected_players = PlayerManager().selected_players()  
+          
         #Création d'une instance de Tournament
         tournament = Tournement(
-            name=name,
-            location=location,
-            start_date=start_date,
-            end_date=end_date,
-            number_of_rounds=number_of_rounds,
-            current_round=current_round,
-            description=description
+            name = name,
+            location = location,
+            start_date = start_date,
+            end_date = end_date,
+            number_of_rounds = number_of_rounds,
+            current_round = current_round,
+            description = description,
+            selected_players = selected_players
         )
         
         tournament_dict = {
@@ -124,6 +157,7 @@ class TournamentManager(Manager):
             "number_of_rounds": tournament.number_of_rounds,
             "current_round": tournament.current_round,
             "description": tournament.description,
+            "selected_players": selected_players
         }
         data["tournaments"].append(tournament_dict)
         
@@ -133,7 +167,7 @@ class TournamentManager(Manager):
         
         print(f"Le tournoi {tournament.name} a été créé.")
         
-    def get_tournaments(self):
+    def get_tournaments(self):  
         """Lit le fichier JSON et retourne la liste des tournois."""
         try:
             with open(self.filename_tournament, 'r', encoding="utf-8") as file:

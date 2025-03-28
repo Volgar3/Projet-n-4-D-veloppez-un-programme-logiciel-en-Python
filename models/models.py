@@ -1,4 +1,5 @@
 from random import shuffle
+
 class Player:
     def __init__(self, first_name, last_name, date_of_birth, points, matricule):
         self.first_name = first_name
@@ -15,12 +16,12 @@ class Tournement:
         self.start_date = kwargs.get('start_date')
         self.end_date = kwargs.get('end_date')
         self.number_of_rounds = kwargs.get('number_of_rounds', 4)
-        self.current_round = kwargs.get('current_round', 1)
+        self.current_round = kwargs.get('current_round', 0)
         self.description = kwargs.get('description')
         self.rounds = [] # Objets Round
-        self.players = [] # Objets Round
+        self.players = [] # Objets Match
         self.matches = [] # Objets Match
-
+        self.selected_players = kwargs.get('selected_players')
 class Round:
     
     def __init__(self, current_round):
@@ -36,7 +37,7 @@ class Round:
         """Création des matchs."""
 
         # Chargement des joueurs
-        self.players = player_manager.get_players()
+        self.players = player_manager.selected_players()
         self.already_played_matches = {}
         matches = []
         if self.current_round == 0:
