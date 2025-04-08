@@ -22,7 +22,7 @@ class PlayerManager(Manager):
         # Vérifier si le dossier existe, sinon le créer
         os.makedirs(self.directory_players, exist_ok=True)
 
-    def add_player(self, first_name, last_name, date_of_birth, points, matricule ):
+    def add_player(self, first_name, last_name, date_of_birth, points, ID ):
         """Ajoute un joueur au fichier players_list.json."""
         os.makedirs(self.directory_players, exist_ok=True)
 
@@ -37,7 +37,7 @@ class PlayerManager(Manager):
             data = {"joueurs": []}  # Création d'une structure vide si le fichier n'existe pas
 
         # Création d'une instance de Player (objet)
-        player = Player(first_name, last_name, date_of_birth, points, matricule)
+        player = Player(first_name, last_name, date_of_birth, points, ID)
 
         # Transformation de l'objet en dictionnaire
         player_dict = {
@@ -45,7 +45,7 @@ class PlayerManager(Manager):
             "last_name": player.last_name,
             "date_of_birth": player.date_of_birth,
             "points": player.points,
-            "ID": player.matricule
+            "ID": player.ID
         }
 
         # Ajout du joueur dans la liste JSON
@@ -81,6 +81,7 @@ class PlayerManager(Manager):
     def selected_players(self):
         """Permet de sélectionner les joueurs pour un tournoi."""
         print("\n=== Liste des joueurs disponibles ===")
+        # Chargement de la liste des joueurs
         self.get_players()
         for index, player in enumerate(self.players):
             print(f"{index + 1}. {player['first_name']} {player['last_name']} (ID: {player['ID']}, Points: {player['points']})")
@@ -109,18 +110,18 @@ class PlayerManager(Manager):
 class TournamentManager(Manager):
     """Gestionnaire des tournois."""
     
-    def __init__(self,filename_tournament= "tournament_list.json", directory_tournaments="Projet_n°4/data/tournaments"):
+    def __init__(self, filename_tournament= "tournament_list.json", directory_tournaments="data/tournaments"):
         """Création du fichier JSON pour stocker les tournois."""
         self.directory_tournaments = directory_tournaments
         self.filename_tournament = filename_tournament
-        filename_tournament = os.path.join(directory_tournaments, filename_tournament)
+        self.filename_tournament = os.path.join(directory_tournaments, filename_tournament)
         self.tournaments = []
         self.selected_players_list = []
         #Vérifier si le dossier existe, sinon le créer
         os.makedirs(directory_tournaments, exist_ok=True)   
         print(f"Répertoire des tournois : {self.directory_tournaments}")      
            
-    def add_tournament(self, name, location, start_date, end_date, number_of_rounds, current_round, description,players):
+    def add_tournament(self, name, location, start_date, end_date, number_of_rounds, current_round, description, players):
         """Création d'un tournoi."""
         os.makedirs(self.directory_tournaments, exist_ok=True)
         

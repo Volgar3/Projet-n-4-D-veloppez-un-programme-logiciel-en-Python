@@ -1,7 +1,7 @@
 from abc import ABC
 from views.menu_views import MainMenuView, PlayerMenuView, TournamentMenuView
 from controllers.managers import PlayerManager, TournamentManager
-from models.models import Round
+from models.models import Round, Player
 
 
 class Menu(ABC):
@@ -149,31 +149,40 @@ class TournamentMenu(Menu):
         TournamentMenuView.display_tournaments_list(tournaments)
 
     def start_tournament(self):
-        """Permet de choisir un tournoi."""
-        # On vérifie si un tournoi est disponible
+        """Permet de choisir un tournoi et de lancer le premier round."""
         tournaments = self.tournament_manager.get_tournaments()
         if not tournaments:
             print("Aucun tournoi disponible.")
             return None
-        
+
         TournamentMenuView.display_tournaments_list(tournaments)
         choice_name = input("Entrez le nom du tournoi que vous souhaitez sélectionner : ").strip()
-        
-        # Vérification du nom du tournoi sélectionné
+
         for tournament in tournaments:
-            if tournament["name"].lower() == choice_name.lower():  
+            if tournament["name"].lower() == choice_name.lower():
                 print(f"Le tournoi {tournament['name']} commence !")
-                
+
+                # Vérifier que les joueurs sont bien enregistrés
+                players_data = tournament.get("selected_players")
+                if not players_data:
+                    print("Aucun joueur trouvé dans ce tournoi.")
+                    return None
+                # Convertir les données des joueurs en objets Player SI nécessaire 
+                players = [
+                    Player(**p) if isinstance(p, dict) else p
+                    for p in players_data
+]
                 # Initialiser la liste des rounds si elle n'existe pas
                 if "rounds" not in tournament:
                     tournament["rounds"] = []
 
                 # Création d'un nouveau round
                 round_number = len(tournament["rounds"]) + 1
-                round = Round(round_number)
+                round = Round(round_number, players)
 
                 # Générer les matchs pour ce round
-                round.create_matches(self.player_manager)
+                round.create_matches()
+                round.result_round()
 
                 # Ajouter le round au tournoi
                 tournament["rounds"].append(round)
@@ -183,9 +192,10 @@ class TournamentMenu(Menu):
 
                 print(f"Le round {round_number} a été créé avec succès.")
                 return tournament
-            else : 
-                print("Tournoi non trouvé.")
-                return None
+
+        # Si aucun tournoi ne correspond
+        print("Tournoi non trouvé.")
+        return None
         
         
         # TODO : Il faut savoir quel tournament on a lancé = FAIT
@@ -195,8 +205,6 @@ class TournamentMenu(Menu):
         # tournament.rounds.append(round)
         # TODO: Sauvegarder les rounds dans le JSON
         # Ligne d'en dessous à supprimer
-        self.matchs = self.launch_match.create_matches(self.player_manager)
-        
     def launch_main_menu(self):
         TournamentMenuView.display_return_message()
         

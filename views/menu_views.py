@@ -26,14 +26,14 @@ class PlayerMenuView(MenuView):
         last_name = input("Nom du joueur : ")
         date_of_birth = input("Date de naissance (DD-MM-YYYY) : ")
         points = input("Nombre de points : ")
-        matricule = input("ID du joueur : ")
+        ID = input("ID du joueur : ")
 
         data_player = {
             "first_name": first_name,
             "last_name": last_name,
             "date_of_birth": date_of_birth,
             "points": points,
-            "ID": matricule,
+            "ID": ID,
         }
 
         return data_player
