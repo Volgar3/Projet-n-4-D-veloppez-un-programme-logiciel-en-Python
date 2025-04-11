@@ -67,8 +67,8 @@ class TournamentMenuView(MenuView):
         description = input("Description : ")
         
         #Sélection des joueurs
-        player = PlayerManager()
-        players = player.get_players()
+        player_manager = PlayerManager()
+        selected_players = player_manager.selected_players()
 
         data_tournament = {
             "name": name,
@@ -78,7 +78,8 @@ class TournamentMenuView(MenuView):
             "number_of_rounds": number_of_rounds,
             "current_round": current_round,
             "description": description,
-            "players": players
+            "selected_players": selected_players,
+            "round_result": []
         }
         return data_tournament
 

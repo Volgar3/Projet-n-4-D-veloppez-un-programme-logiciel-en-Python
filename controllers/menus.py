@@ -141,7 +141,8 @@ class TournamentMenu(Menu):
             data_tournament['number_of_rounds'],
             data_tournament['current_round'],
             data_tournament['description'],
-            data_tournament['players']
+            data_tournament['round_result'],
+            data_tournament['selected_players'],
         )
     
     def tournament_list(self):
@@ -183,7 +184,20 @@ class TournamentMenu(Menu):
                 # Générer les matchs pour ce round
                 round.create_matches()
                 round.result_round()
-
+                
+                # Mettre à jour les joueurs avec leurs nouveaux points
+                """Obligation de mettre toutes les keys sinon on perd les données"""
+                tournament["selected_players"] = [
+                    {
+                        "first_name": p.first_name,
+                        "last_name": p.last_name,
+                        "date_of_birth": p.date_of_birth,
+                        "points": p.points,
+                        "ID": p.ID
+                    }
+                    for p in players
+                ]
+                
                 # Ajouter le round au tournoi
                 tournament["rounds"].append(round)
 

@@ -2,7 +2,7 @@ from abc import ABC
 import json
 import os
 import random
-from models.models import Player, Tournement
+from models.models import Player, Tournament
 
 
 class Manager(ABC):
@@ -121,7 +121,7 @@ class TournamentManager(Manager):
         os.makedirs(directory_tournaments, exist_ok=True)   
         print(f"Répertoire des tournois : {self.directory_tournaments}")      
            
-    def add_tournament(self, name, location, start_date, end_date, number_of_rounds, current_round, description, players):
+    def add_tournament(self, name, location, start_date, end_date, number_of_rounds, current_round, description, round_result, players):
         """Création d'un tournoi."""
         os.makedirs(self.directory_tournaments, exist_ok=True)
         
@@ -134,20 +134,18 @@ class TournamentManager(Manager):
                     data = {"tournaments": []}
         else:
             data = {"tournaments": []}
-            
-        # Sélection des joueurs
-        selected_players = PlayerManager().selected_players()  
-          
+  
         #Création d'une instance de Tournament
-        tournament = Tournement(
+        tournament = Tournament(
             name = name,
             location = location,
             start_date = start_date,
             end_date = end_date,
             number_of_rounds = number_of_rounds,
             current_round = current_round,
+            round_result = round_result,
             description = description,
-            selected_players = selected_players
+            selected_players = players
         )
         
         tournament_dict = {
@@ -157,8 +155,9 @@ class TournamentManager(Manager):
             "end_date": tournament.end_date,
             "number_of_rounds": tournament.number_of_rounds,
             "current_round": tournament.current_round,
+            "round_result": tournament.round_result,
             "description": tournament.description,
-            "selected_players": selected_players
+            "selected_players": tournament.selected_players
         }
         data["tournaments"].append(tournament_dict)
         
@@ -186,4 +185,27 @@ class TournamentManager(Manager):
 
         return self.tournaments # Retourne la liste des tournois
 
+    def save_tournament(self, updated_tournament):
+        """Met à jour un tournoi existant dans le fichier JSON."""
+        # Charger le fichier existant
+        try:
+            with open(self.filename_tournament, "r", encoding="utf-8") as file:
+                data = json.load(file)
+        except (FileNotFoundError, json.JSONDecodeError):
+            data = {"tournaments": []}
+
+        # Remplacer le tournoi qui a le même nom
+        for i, t in enumerate(data["tournaments"]):
+            if t["name"] == updated_tournament["name"]:
+                data["tournaments"][i] = updated_tournament
+                break
+        else:
+            # Si non trouvé, l'ajouter (sécurité)
+            data["tournaments"].append(updated_tournament)
+
+        # Réécrire dans le fichier JSON
+        with open(self.filename_tournament, "w", encoding="utf-8") as file:
+            json.dump(data, file, indent=4, ensure_ascii=False)
+
+        print(f"Tournoi \"{updated_tournament['name']}\" sauvegardé avec succès.")
     
