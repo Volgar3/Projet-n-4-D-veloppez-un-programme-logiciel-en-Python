@@ -1,7 +1,7 @@
 from abc import ABC
 from controllers.managers import PlayerManager, TournamentManager
-from controllers.managers import TournamentManager
 from models.models import Round
+
 
 class MenuView(ABC):
     @staticmethod
@@ -26,33 +26,32 @@ class PlayerMenuView(MenuView):
         last_name = input("Nom du joueur : ")
         date_of_birth = input("Date de naissance (DD-MM-YYYY) : ")
         points = input("Nombre de points : ")
-        ID = input("ID du joueur : ")
+        player_id = input("ID du joueur : ")
 
-        data_player = {
+        return {
             "first_name": first_name,
             "last_name": last_name,
             "date_of_birth": date_of_birth,
             "points": points,
-            "ID": ID,
+            "ID": player_id,
         }
-
-        return data_player
 
     @staticmethod
     def display_players_list(players):
         """Affichage de la liste des joueurs."""
         print("\n=== Liste des joueurs ===")
-        
         for player in players:
             print(
-                f"Prénom: {player['first_name']}, Nom: {player['last_name']}, Date de naissance: {player['date_of_birth']} "
-                f"Points: {player['points']},ID : {player['ID']}"
+                f"Prénom: {player['first_name']}, Nom: {player['last_name']}, "
+                f"Date de naissance: {player['date_of_birth']}, "
+                f"Points: {player['points']}, ID: {player['ID']}"
             )
 
     @staticmethod
     def display_return_message():
         print("-> Retour au menu principal")
-        
+
+
 class TournamentMenuView(MenuView):
     @staticmethod
     def display_add_tournament():
@@ -65,12 +64,11 @@ class TournamentMenuView(MenuView):
         number_of_rounds = input("Nombre de rounds : ")
         current_round = input("Round actuel : ")
         description = input("Description : ")
-        
-        #Sélection des joueurs
+
         player_manager = PlayerManager()
         selected_players = player_manager.selected_players()
 
-        data_tournament = {
+        return {
             "name": name,
             "location": location,
             "start_date": start_date,
@@ -81,7 +79,6 @@ class TournamentMenuView(MenuView):
             "selected_players": selected_players,
             "round_result": []
         }
-        return data_tournament
 
     @staticmethod
     def display_tournaments_list(tournaments):
@@ -90,35 +87,32 @@ class TournamentMenuView(MenuView):
         for tournament in tournaments:
             print(
                 f"Nom: {tournament['name']}, Lieu: {tournament['location']}, "
-                f"Date de début: {tournament['start_date']}, Date de fin: {tournament['end_date']}, "
-                f"Nombre de rounds: {tournament['number_of_rounds']}, Round actuel: {tournament['current_round']}, "
+                f"Date de début: {tournament['start_date']}, "
+                f"Date de fin: {tournament['end_date']}, "
+                f"Nombre de rounds: {tournament['number_of_rounds']}, "
+                f"Round actuel: {tournament['current_round']}, "
                 f"Description: {tournament['description']}"
             )
-            
+
     @staticmethod
     def display_matches(matches):
         """Affichage des matchs."""
         print("\n=== Liste des matchs ===")
         for match in matches:
             print(f"Match : {match[0]} contre {match[1]}")
-            
-            
+
     @staticmethod
     def display_players_for_tournament(players):
         """Affichage des joueurs pour un tournoi."""
-        print("\n=== choisissez les joueurs participants au tournoi ===")
-        # TODO: A déplacer dans le controller.
+        print("\n=== Choisissez les joueurs participants au tournoi ===")
         for player in players:
-            print(
-                f"Prénom: {player['first_name']}, ID : {player['ID']}"
-            )
-            
+            print(f"Prénom: {player['first_name']}, ID : {player['ID']}")
+
         selected_players = []
         print("\nEntrez les ID des joueurs que vous souhaitez sélectionner (séparés par des virgules) :")
         ids = input("IDs des joueurs : ").split(",")
 
-        for player_id in ids:
-            player_id = player_id.strip()  # Supprimer les espaces autour de l'ID
+        for player_id in map(str.strip, ids):
             for player in players:
                 if player['ID'] == player_id:
                     selected_players.append(player)
@@ -128,15 +122,15 @@ class TournamentMenuView(MenuView):
 
         print("\n=== Joueurs sélectionnés ===")
         for player in selected_players:
-            print(
-                f"Prénom: {player['first_name']}, ID : {player['ID']}"
-            )
+            print(f"Prénom: {player['first_name']}, ID : {player['ID']}")
 
         return selected_players
-            
+
+
 class ViewMenuRound(MenuView):
+    @staticmethod
     def display_matches(matches):
         """Affichage des matchs."""
         print("\n=== Liste des matchs ===")
-        for P1, P2 in matches:
-            print(f"Match : {P1[0]} contre {P2[1]}")
+        for p1, p2 in matches:
+            print(f"Match : {p1[0]} contre {p2[1]}")
