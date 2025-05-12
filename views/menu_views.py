@@ -40,12 +40,9 @@ class PlayerMenuView(MenuView):
     def display_players_list(players):
         """Affichage de la liste des joueurs."""
         print("\n=== Liste des joueurs ===")
+        
         for player in players:
-            print(
-                f"Prénom: {player['first_name']}, Nom: {player['last_name']}, "
-                f"Date de naissance: {player['date_of_birth']}, "
-                f"Points: {player['points']}, ID: {player['ID']}"
-            )
+           print(f"prénom : {player.first_name}, nom : {player.last_name}, date de naissance : {player.date_of_birth}, ID : {player.ID}")
 
     @staticmethod
     def display_return_message():
@@ -86,12 +83,12 @@ class TournamentMenuView(MenuView):
         print("\n=== Liste des tournois ===")
         for tournament in tournaments:
             print(
-                f"Nom: {tournament['name']}, Lieu: {tournament['location']}, "
-                f"Date de début: {tournament['start_date']}, "
-                f"Date de fin: {tournament['end_date']}, "
-                f"Nombre de rounds: {tournament['number_of_rounds']}, "
-                f"Round actuel: {tournament['current_round']}, "
-                f"Description: {tournament['description']}"
+                f"Nom: {tournament.name}, Lieu: {tournament.location}, "
+                f"Date de début: {tournament.start_date}, "
+                f"Date de fin: {tournament.end_date}, "
+                f"Nombre de rounds: {tournament.number_of_rounds}, "
+                f"Round actuel: {tournament.current_round}, "
+                f"Description: {tournament.description}"
             )
 
     @staticmethod

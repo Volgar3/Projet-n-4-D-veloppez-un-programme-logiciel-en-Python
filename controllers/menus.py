@@ -1,7 +1,7 @@
 from abc import ABC
 from views.menu_views import MainMenuView, PlayerMenuView, TournamentMenuView
 from controllers.managers import PlayerManager, TournamentManager
-from models.models import Round, Player
+from models.models import Round, Player, Tournament
 
 
 class Menu(ABC):
@@ -31,7 +31,7 @@ class MainMenu(Menu):
         self.tournament_manager = TournamentManager()
         self.player_menu = PlayerMenu("Player Menu", self.player_manager)
         self.tournament_menu = TournamentMenu(
-            "Tournament Menu", self.tournament_manager, self.player_manager
+            "Tournament Menu", self.tournament_manager, self.player_manager,
         )
 
     def run(self):
@@ -162,51 +162,53 @@ class TournamentMenu(Menu):
             return None
 
         TournamentMenuView.display_tournaments_list(tournaments)
-        choice_name = input(
-            "Entrez le nom du tournoi que vous souhaitez sélectionner : "
-        ).strip()
+        choice_name = input("Entrez le nom du tournoi que vous souhaitez sélectionner : ").strip()
 
-        for tournament in tournaments:
-            if tournament["name"].lower() == choice_name.lower():
-                print(f"Le tournoi {tournament['name']} commence !")
+        tournament = None
+        for tournament_obj in tournaments:
+            if tournament_obj.name.lower() == choice_name.lower():
+                tournament = tournament_obj
+                break  
 
-                players_data = tournament.get("selected_players")
-                if not players_data:
-                    print("Aucun joueur trouvé dans ce tournoi.")
-                    return None
+        if tournament is None:
+            print("Tournoi non trouvé.")
+            return None
+        print(f"Le tournoi {tournament.name} commence !")
 
-                players = [
-                    Player(**p) if isinstance(p, dict) else p
-                    for p in players_data
-                ]
+        players_data = tournament.selected_players
+        if not players_data:
+            print("Aucun joueur trouvé dans ce tournoi.")
+            return None
 
-                if "rounds" not in tournament:
-                    tournament["rounds"] = []
+        players = []
+        for p in players_data:
+            player = Player.player_from_dict(p)
+            players.append(player)
+            
+        
+        while tournament.current_round < tournament.number_of_rounds:
+            players = [Player.player_from_dict(p) for p in tournament.selected_players]   # Recharger les joueurs à chaque round
+            print(f"\n--- Round {tournament.current_round} ---")
+            
+            
+            print(tournament.rounds, tournament.current_round)
+            already_played_matches = tournament.rounds[tournament.current_round] if tournament.current_round > 1 else []
+            round = Round(tournament.current_round, already_played_matches, players)
+            round.create_matches(tournament.rounds)
+            round.result_round()
 
-                round_number = len(tournament["rounds"]) + 1
-                round = Round(round_number, players)
-                round.create_matches()
-                round.result_round()
+            tournament.selected_players = [p.player_to_dict() for p in players]
 
-                tournament["selected_players"] = [
-                    {
-                        "first_name": p.first_name,
-                        "last_name": p.last_name,
-                        "date_of_birth": p.date_of_birth,
-                        "points": p.points,
-                        "ID": p.ID
-                    }
-                    for p in players
-                ]
-
-                tournament["rounds"].append(round)
-                self.tournament_manager.save_tournament(tournament)
-
-                print(f"Le round {round_number} a été créé avec succès.")
-                return tournament
-
-        print("Tournoi non trouvé.")
-        return None
+            tournament.round_result.append(round.to_result_dict())
+            tournament.rounds.append(round)
+                
+            updated_tournament = tournament.tournament_to_dict()
+            self.tournament_manager.save_tournament(updated_tournament)
+            print(f"Le round {tournament.current_round} a été créé avec succès.")
+            tournament.current_round += 1
+            
+        print(f"Le tournoi {tournament.name} est terminé !")
+        return tournament
 
     def launch_main_menu(self):
         TournamentMenuView.display_return_message()

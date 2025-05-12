@@ -37,14 +37,7 @@ class PlayerManager(Manager):
             data = {"joueurs": []}
 
         player = Player(first_name, last_name, date_of_birth, points, ID)
-        player_dict = {
-            "first_name": player.first_name,
-            "last_name": player.last_name,
-            "date_of_birth": player.date_of_birth,
-            "points": player.points,
-            "ID": player.ID
-        }
-
+        player_dict = player.player_to_dict()
         data["joueurs"].append(player_dict)
 
         with open(self.filename_players, "w", encoding="utf-8") as file:
@@ -57,9 +50,15 @@ class PlayerManager(Manager):
         try:
             with open(self.filename_players, "r", encoding="utf-8") as file:
                 data = json.load(file)
-
+            
+            players_to_convert = []
             if "joueurs" in data:
-                self.players = data["joueurs"]
+                for player_dict in data["joueurs"]:
+                    player = Player.player_from_dict(player_dict)
+                    players_to_convert.append(player)
+                players_to_convert.sort(key=lambda player : player.first_name)
+            
+                self.players = players_to_convert
             else:
                 print("Aucune clé 'joueurs' trouvée dans le fichier.")
 
@@ -134,6 +133,9 @@ class TournamentManager(Manager):
         else:
             data = {"tournaments": []}
 
+        number_of_rounds = int(number_of_rounds)
+        current_round = int(current_round)
+        
         tournament = Tournament(
             name=name,
             location=location,
@@ -146,17 +148,7 @@ class TournamentManager(Manager):
             selected_players=players
         )
 
-        tournament_dict = {
-            "name": tournament.name,
-            "location": tournament.location,
-            "start_date": tournament.start_date,
-            "end_date": tournament.end_date,
-            "number_of_rounds": tournament.number_of_rounds,
-            "current_round": tournament.current_round,
-            "round_result": tournament.round_result,
-            "description": tournament.description,
-            "selected_players": tournament.selected_players
-        }
+        tournament_dict = tournament.tournament_to_dict()
 
         data["tournaments"].append(tournament_dict)
 
@@ -172,7 +164,10 @@ class TournamentManager(Manager):
                 data = json.load(file)
 
             if "tournaments" in data:
-                self.tournaments = data["tournaments"]
+                self.tournaments = [
+                    Tournament.tournament_from_dict(t)
+                    for t in data["tournaments"]
+                ]
             else:
                 print("Aucune clé 'tournaments' trouvée dans le fichier.")
         except FileNotFoundError:
@@ -193,11 +188,12 @@ class TournamentManager(Manager):
             data = {"tournaments": []}
 
         for i, t in enumerate(data["tournaments"]):
+            updated_tournament['rounds'] = [round.to_dict() for round in updated_tournament['rounds']]
             if t["name"] == updated_tournament["name"]:
                 data["tournaments"][i] = updated_tournament
                 break
-        else:
-            data["tournaments"].append(updated_tournament)
+            else:
+                data["tournaments"].append(updated_tournament)
 
         with open(self.filename_tournament, "w", encoding="utf-8") as file:
             json.dump(data, file, indent=4, ensure_ascii=False)
