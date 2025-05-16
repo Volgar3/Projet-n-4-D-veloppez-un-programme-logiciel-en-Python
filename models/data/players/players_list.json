@@ -1,0 +1,28 @@
+{
+    "joueurs": [
+        {
+            "first_name": "t",
+            "last_name": "t",
+            "date_of_birth": "t",
+            "points": 0,
+            "ID": "t",
+            "ID_played": []
+        },
+        {
+            "first_name": "test",
+            "last_name": "test",
+            "date_of_birth": "12/12/1222",
+            "points": 0,
+            "ID": "tt12345",
+            "ID_played": []
+        },
+        {
+            "first_name": "tt",
+            "last_name": "t",
+            "date_of_birth": "t",
+            "points": 0,
+            "ID": "",
+            "ID_played": []
+        }
+    ]
+}

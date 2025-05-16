@@ -1,15 +1,9 @@
-from abc import ABC
 import json
 import os
 from models.models import Player, Tournament
 
 
-class Manager(ABC):
-    """Classe abstraite pour les gestionnaires."""
-    pass
-
-
-class PlayerManager(Manager):
+class PlayerManager:
     """Gestionnaire des joueurs."""
 
     def __init__(self, filename_players="players_list.json",
@@ -17,13 +11,14 @@ class PlayerManager(Manager):
         """Création du fichier JSON pour stocker les joueurs."""
         self.directory_players = directory_players
         self.filename_players = os.path.join(
-            self.directory_players, filename_players
+            self.directory_players,
+            filename_players
         )
         self.players = []
-
         os.makedirs(self.directory_players, exist_ok=True)
 
-    def add_player(self, first_name, last_name, date_of_birth, points, ID):
+    def add_player(self, first_name, last_name, date_of_birth,
+                   points, ID, ID_played):
         """Ajoute un joueur au fichier players_list.json."""
         os.makedirs(self.directory_players, exist_ok=True)
 
@@ -43,25 +38,28 @@ class PlayerManager(Manager):
         with open(self.filename_players, "w", encoding="utf-8") as file:
             json.dump(data, file, indent=4, ensure_ascii=False)
 
-        print(f"Joueur {player.last_name} a été ajouté à la liste des participants.")
+        print(
+            f"Joueur {player.last_name} a été ajouté à la liste des "
+            "participants."
+        )
 
     def get_players(self):
         """Lit le fichier JSON et retourne la liste des joueurs."""
         try:
             with open(self.filename_players, "r", encoding="utf-8") as file:
                 data = json.load(file)
-            
+
             players_to_convert = []
             if "joueurs" in data:
                 for player_dict in data["joueurs"]:
                     player = Player.player_from_dict(player_dict)
                     players_to_convert.append(player)
-                players_to_convert.sort(key=lambda player : player.first_name)
-            
+                players_to_convert.sort(
+                    key=lambda player: player.first_name
+                )
                 self.players = players_to_convert
             else:
                 print("Aucune clé 'joueurs' trouvée dans le fichier.")
-
         except FileNotFoundError:
             print("Le fichier de joueurs n'existe pas.")
             self.players = []
@@ -76,12 +74,21 @@ class PlayerManager(Manager):
         print("\n=== Liste des joueurs disponibles ===")
         self.get_players()
 
+        player_to_dict = []
+        for player in self.players:
+            player = player.player_to_dict()
+            player_to_dict.append(player)
+        self.players = player_to_dict
+
         for index, player in enumerate(self.players):
             print(f"{index + 1}. {player['first_name']} {player['last_name']} "
                   f"(ID: {player['ID']}, Points: {player['points']})")
 
         selected_players = []
-        print("\nEntrez les numéros des joueurs à sélectionner (séparés par des virgules) :")
+        print(
+            "\nEntrez les numéros des joueurs à sélectionner "
+            "(séparés par des virgules) :"
+        )
         choices = input("ID des joueurs : ").split(",")
 
         for choice in choices:
@@ -102,7 +109,7 @@ class PlayerManager(Manager):
         return selected_players
 
 
-class TournamentManager(Manager):
+class TournamentManager:
     """Gestionnaire des tournois."""
 
     def __init__(self, filename_tournament="tournament_list.json",
@@ -110,13 +117,15 @@ class TournamentManager(Manager):
         """Création du fichier JSON pour stocker les tournois."""
         self.directory_tournaments = directory_tournaments
         self.filename_tournament = os.path.join(
-            directory_tournaments, filename_tournament
+            directory_tournaments,
+            filename_tournament
         )
         self.tournaments = []
         self.selected_players_list = []
-
         os.makedirs(directory_tournaments, exist_ok=True)
-        print(f"Répertoire des tournois : {self.directory_tournaments}")
+        print(
+            f"Répertoire des tournois : {self.directory_tournaments}"
+        )
 
     def add_tournament(self, name, location, start_date, end_date,
                        number_of_rounds, current_round, description,
@@ -135,7 +144,7 @@ class TournamentManager(Manager):
 
         number_of_rounds = int(number_of_rounds)
         current_round = int(current_round)
-        
+
         tournament = Tournament(
             name=name,
             location=location,
@@ -149,7 +158,6 @@ class TournamentManager(Manager):
         )
 
         tournament_dict = tournament.tournament_to_dict()
-
         data["tournaments"].append(tournament_dict)
 
         with open(self.filename_tournament, "w", encoding="utf-8") as file:
@@ -188,7 +196,9 @@ class TournamentManager(Manager):
             data = {"tournaments": []}
 
         for i, t in enumerate(data["tournaments"]):
-            updated_tournament['rounds'] = [round.to_dict() for round in updated_tournament['rounds']]
+            updated_tournament["rounds"] = [
+                round.to_dict() for round in updated_tournament["rounds"]
+            ]
             if t["name"] == updated_tournament["name"]:
                 data["tournaments"][i] = updated_tournament
                 break
@@ -198,4 +208,6 @@ class TournamentManager(Manager):
         with open(self.filename_tournament, "w", encoding="utf-8") as file:
             json.dump(data, file, indent=4, ensure_ascii=False)
 
-        print(f'Tournoi "{updated_tournament["name"]}" sauvegardé avec succès.')
+        print(
+            f'Tournoi "{updated_tournament["name"]}" sauvegardé avec succès.'
+        )

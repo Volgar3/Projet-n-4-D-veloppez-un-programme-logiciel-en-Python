@@ -1,7 +1,7 @@
 from abc import ABC
 from views.menu_views import MainMenuView, PlayerMenuView, TournamentMenuView
 from controllers.managers import PlayerManager, TournamentManager
-from models.models import Round, Player, Tournament
+from models.models import Round, Player
 
 
 class Menu(ABC):
@@ -24,14 +24,16 @@ class MainMenu(Menu):
     def __init__(self, title):
         super().__init__(title)
         self.add_option("1", "Paramètre joueur", self.launch_player_menu)
-        self.add_option("2", "Paramétrer un tournoi", self.launch_tournament_menu)
+        self.add_option(
+            "2", "Paramétrer un tournoi", self.launch_tournament_menu
+        )
         self.add_option("q", "Quitter", self.quit)
 
         self.player_manager = PlayerManager()
         self.tournament_manager = TournamentManager()
         self.player_menu = PlayerMenu("Player Menu", self.player_manager)
         self.tournament_menu = TournamentMenu(
-            "Tournament Menu", self.tournament_manager, self.player_manager,
+            "Tournament Menu", self.tournament_manager, self.player_manager
         )
 
     def run(self):
@@ -59,6 +61,7 @@ class MainMenu(Menu):
 
 
 class PlayerMenu(Menu):
+    
     def __init__(self, title, player_manager):
         super().__init__(title)
         self.add_option("1", "Ajouter un joueur", self.add_player)
@@ -82,21 +85,15 @@ class PlayerMenu(Menu):
 
     def add_player(self):
         data_player = PlayerMenuView.display_add_players()
-        try:
-            data_player['points'] = int(data_player['points'])
-        except ValueError:
-            print("Erreur : Le nombre de points doit être un entier.")
-            return
-
         self.player_manager.add_player(
             data_player['first_name'],
             data_player['last_name'],
             data_player['date_of_birth'],
-            data_player['points'],
             data_player['ID']
         )
 
     def player_list(self):
+        """lance la méthode du listage des joueurs"""
         PlayerMenuView.display_players_list(self.player_manager.get_players())
 
     def launch_main_menu(self):
@@ -129,6 +126,7 @@ class TournamentMenu(Menu):
                 print("Choix invalide, veuillez réessayer.\n")
 
     def add_tournament(self):
+        """Lance la méthode d'ajout de tournoi"""
         data_tournament = TournamentMenuView.display_add_tournament()
         try:
             data_tournament['number_of_rounds'] = int(
@@ -147,28 +145,31 @@ class TournamentMenu(Menu):
             data_tournament['current_round'],
             data_tournament['description'],
             data_tournament['round_result'],
-            data_tournament['selected_players'],
+            data_tournament['selected_players']
         )
 
     def tournament_list(self):
+        """Lance la méthode du listage des tournois"""
         tournaments = self.tournament_manager.get_tournaments()
         TournamentMenuView.display_tournaments_list(tournaments)
 
     def start_tournament(self):
-        """Permet de choisir un tournoi et de lancer le premier round."""
+        """Permet la sélection du tournoi et le lance"""
         tournaments = self.tournament_manager.get_tournaments()
         if not tournaments:
             print("Aucun tournoi disponible.")
             return None
 
         TournamentMenuView.display_tournaments_list(tournaments)
-        choice_name = input("Entrez le nom du tournoi que vous souhaitez sélectionner : ").strip()
+        choice_name = input(
+            "Entrez le nom du tournoi que vous souhaitez sélectionner : "
+        ).strip()
 
         tournament = None
         for tournament_obj in tournaments:
             if tournament_obj.name.lower() == choice_name.lower():
                 tournament = tournament_obj
-                break  
+                break
 
         if tournament is None:
             print("Tournoi non trouvé.")
@@ -180,33 +181,29 @@ class TournamentMenu(Menu):
             print("Aucun joueur trouvé dans ce tournoi.")
             return None
 
-        players = []
-        for p in players_data:
-            player = Player.player_from_dict(p)
-            players.append(player)
-            
-        
         while tournament.current_round < tournament.number_of_rounds:
-            players = [Player.player_from_dict(p) for p in tournament.selected_players]   # Recharger les joueurs à chaque round
-            print(f"\n--- Round {tournament.current_round} ---")
-            
-            
-            print(tournament.rounds, tournament.current_round)
-            already_played_matches = tournament.rounds[tournament.current_round] if tournament.current_round > 1 else []
-            round = Round(tournament.current_round, already_played_matches, players)
+            players = [
+                p if isinstance(p, Player) else Player.player_from_dict(p)
+                for p in tournament.selected_players
+            ]
+            print(f"\n--- Round {tournament.current_round + 1} ---")
+            round = Round(tournament.current_round, players=players)
             round.create_matches(tournament.rounds)
             round.result_round()
-
-            tournament.selected_players = [p.player_to_dict() for p in players]
-
+            tournament.selected_players = [
+                p.player_to_dict() for p in players
+            ]
             tournament.round_result.append(round.to_result_dict())
             tournament.rounds.append(round)
-                
+
             updated_tournament = tournament.tournament_to_dict()
             self.tournament_manager.save_tournament(updated_tournament)
-            print(f"Le round {tournament.current_round} a été créé avec succès.")
+
+            print(
+                f"Le round {tournament.current_round +1 } a été créé avec succès."
+            )
             tournament.current_round += 1
-            
+
         print(f"Le tournoi {tournament.name} est terminé !")
         return tournament
 

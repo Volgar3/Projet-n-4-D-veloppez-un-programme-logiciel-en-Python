@@ -1,6 +1,5 @@
 from abc import ABC
-from controllers.managers import PlayerManager, TournamentManager
-from models.models import Round
+from controllers.managers import PlayerManager
 
 
 class MenuView(ABC):
@@ -20,19 +19,18 @@ class MainMenuView(MenuView):
 class PlayerMenuView(MenuView):
     @staticmethod
     def display_add_players():
-        """Demande les informations du joueur et les retourne sous forme de dictionnaire."""
+        """Demande les informations du joueur et
+        les retourne sous forme de dictionnaire."""
         print("\n=== Information du joueur à rentrer ===")
         first_name = input("Prénom du joueur : ")
         last_name = input("Nom du joueur : ")
         date_of_birth = input("Date de naissance (DD-MM-YYYY) : ")
-        points = input("Nombre de points : ")
         player_id = input("ID du joueur : ")
 
         return {
             "first_name": first_name,
             "last_name": last_name,
             "date_of_birth": date_of_birth,
-            "points": points,
             "ID": player_id,
         }
 
@@ -40,9 +38,10 @@ class PlayerMenuView(MenuView):
     def display_players_list(players):
         """Affichage de la liste des joueurs."""
         print("\n=== Liste des joueurs ===")
-        
         for player in players:
-           print(f"prénom : {player.first_name}, nom : {player.last_name}, date de naissance : {player.date_of_birth}, ID : {player.ID}")
+            print(f"prénom : {player.first_name}, nom : {player.last_name}, "
+                  f"date de naissance : {player.date_of_birth}, "
+                  f"ID : {player.ID}")
 
     @staticmethod
     def display_return_message():
@@ -106,7 +105,8 @@ class TournamentMenuView(MenuView):
             print(f"Prénom: {player['first_name']}, ID : {player['ID']}")
 
         selected_players = []
-        print("\nEntrez les ID des joueurs que vous souhaitez sélectionner (séparés par des virgules) :")
+        print("\nEntrez les ID des joueurs que vous souhaitez sélectionner "
+              "(séparés par des virgules) :")
         ids = input("IDs des joueurs : ").split(",")
 
         for player_id in map(str.strip, ids):
@@ -124,7 +124,7 @@ class TournamentMenuView(MenuView):
         return selected_players
 
 
-class ViewMenuRound(MenuView):
+class RoundMenuView(MenuView):
     @staticmethod
     def display_matches(matches):
         """Affichage des matchs."""

@@ -1,0 +1,17 @@
+{
+    "tournaments": [
+        {
+            "name": "t",
+            "location": "t",
+            "start_date": "t",
+            "end_date": "t",
+            "number_of_rounds": 4,
+            "current_round": 0,
+            "description": "t",
+            "selected_players": [],
+            "round_result": [],
+            "rounds": [],
+            "matches": []
+        }
+    ]
+}
