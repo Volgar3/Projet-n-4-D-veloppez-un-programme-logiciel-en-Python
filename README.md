@@ -69,3 +69,15 @@ Ensuite, vous pourrez naviguer dans le menu en sélectionnant les options indiqu
     - Liste des tournois
     - Commencer un tournoi (Ici, vous aurez la liste des tournois existants. Dans le cas où aucun tournoi n'existerait, un message vous indiquera qu'aucun tournoi n'est enregistré et vous renverra dans le menu du tournoi.)
     - Retour au menu Principal
+
+## Vérification du respect de la pep8
+
+### Intallation de flake8-html
+
+-Entrez cette commande pour installer flake8-html : pip install flake8-html   
+
+- Ensuite, Se positionner dans le répertoire où se trouve l'application 
+
+- Entrez la commande : flake8 --format=html --htmldir=flake8-report   
+
+Un fichier va se créer dans l'application à sa racine, vous y retrouvez dedans un fichier html montrant qu'il n'y a aucun erreur de peluchage
