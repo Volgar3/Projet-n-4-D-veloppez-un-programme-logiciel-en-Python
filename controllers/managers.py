@@ -92,10 +92,10 @@ class PlayerManager:
         choices = input("ID des joueurs : ").split(",")
 
         for choice in choices:
-            choice = choice.strip()  # Supprime les espaces autour de l'entrée
+            choice = choice.strip()
             player_found = False
             for player in self.players:
-                if player["ID"] == choice:  # Compare l'ID entré avec l'ID des joueurs
+                if player["ID"] == choice:
                     selected_players.append(player)
                     player_found = True
                     break
@@ -104,7 +104,10 @@ class PlayerManager:
 
         print("\n=== Joueurs sélectionnés ===")
         for player in selected_players:
-            print(f"{player['first_name']} {player['last_name']} (ID: {player['ID']})")
+            print(
+                f"{player['first_name']} {player['last_name']} "
+                f"(ID: {player['ID']})"
+            )
 
         return selected_players
 

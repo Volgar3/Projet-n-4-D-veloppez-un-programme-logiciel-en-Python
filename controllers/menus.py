@@ -61,7 +61,7 @@ class MainMenu(Menu):
 
 
 class PlayerMenu(Menu):
-    
+
     def __init__(self, title, player_manager):
         super().__init__(title)
         self.add_option("1", "Ajouter un joueur", self.add_player)
@@ -200,7 +200,8 @@ class TournamentMenu(Menu):
             self.tournament_manager.save_tournament(updated_tournament)
 
             print(
-                f"Le round {tournament.current_round +1 } a été créé avec succès."
+                f"Le round {tournament.current_round + 1}"
+                "a été créé avec succès."
             )
             tournament.current_round += 1
 
