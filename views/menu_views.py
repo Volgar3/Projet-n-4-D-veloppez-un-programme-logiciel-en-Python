@@ -26,7 +26,9 @@ class PlayerMenuView(MenuView):
         last_name = input("Nom du joueur : ")
         date_of_birth = input("Date de naissance (DD-MM-YYYY) : ")
         player_id = input("ID du joueur : ")
-
+        #points = input("Nb de point : ")
+        #ID_played = input("ID_played : ")
+        
         return {
             "first_name": first_name,
             "last_name": last_name,
@@ -123,7 +125,10 @@ class TournamentMenuView(MenuView):
 
         return selected_players
 
-
+    @staticmethod
+    def display_return_message():
+        print("-> Retour au menu principal")
+        
 class RoundMenuView(MenuView):
     @staticmethod
     def display_matches(matches):
@@ -131,3 +136,7 @@ class RoundMenuView(MenuView):
         print("\n=== Liste des matchs ===")
         for p1, p2 in matches:
             print(f"Match : {p1[0]} contre {p2[1]}")
+
+    
+
+        
