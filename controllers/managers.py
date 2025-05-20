@@ -92,22 +92,18 @@ class PlayerManager:
         choices = input("ID des joueurs : ").split(",")
 
         for choice in choices:
-            choice = choice.strip()
-            player_found = False
-            for player in self.players:
-                if player["ID"] == choice:
-                    selected_players.append(player)
-                    player_found = True
-                    break
-            if not player_found:
-                print(f"ID {choice} invalide ou introuvable.")
+            try:
+                index = int(choice.strip()) - 1
+                if 0 <= index < len(self.players):
+                    selected_players.append(self.players[index])
+                else:
+                    print(f"Numéro {choice} invalide (hors liste).")
+            except ValueError:
+                print(f"Entrée invalide : {choice} n’est pas un nombre.")
 
         print("\n=== Joueurs sélectionnés ===")
         for player in selected_players:
-            print(
-                f"{player['first_name']} {player['last_name']} "
-                f"(ID: {player['ID']})"
-            )
+            print(f"{player['first_name']} {player['last_name']}")
 
         return selected_players
 

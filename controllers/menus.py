@@ -89,7 +89,9 @@ class PlayerMenu(Menu):
             data_player['first_name'],
             data_player['last_name'],
             data_player['date_of_birth'],
-            data_player['ID']
+            0,  # points par défaut
+            data_player['ID'],
+            []  # ID_played vide
         )
 
     def player_list(self):
