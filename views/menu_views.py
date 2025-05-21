@@ -12,10 +12,6 @@ class MenuView(ABC):
         print()
 
 
-class MainMenuView(MenuView):
-    pass
-
-
 class PlayerMenuView(MenuView):
     @staticmethod
     def display_add_players():
